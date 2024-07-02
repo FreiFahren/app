@@ -31,5 +31,11 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# contains only derived data for now
-android
+# Android/IntelliJ
+build/
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
