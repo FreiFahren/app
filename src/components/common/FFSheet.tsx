@@ -28,7 +28,9 @@ const SheetBackground = ({ style, ...props }: ViewProps) => (
     style={[
       style,
       {
-        backgroundColor: theme.colors.bg2,
+        backgroundColor: theme.colors.bg,
+        borderColor: theme.colors.bg2,
+        borderWidth: 3,
         flex: 1,
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
@@ -62,7 +64,7 @@ export const FFSheet = forwardRef(
     ref: Ref<BottomSheetModalMethods>
   ) => (
     <FFSheetBase ref={ref} {...props}>
-      <View px="4" pt="7">
+      <View px="5" pt="7">
         {children}
       </View>
     </FFSheetBase>
@@ -75,7 +77,7 @@ export const FFScrollSheet = forwardRef(
   ) => (
     <FFSheetBase ref={ref} {...props}>
       <BottomSheetScrollView>
-        <View px="4" pt="7">
+        <View px="5" pt="7">
           {children}
         </View>
       </BottomSheetScrollView>

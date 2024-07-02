@@ -13,7 +13,8 @@ import {
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Modal } from "react-native";
 
-import { useLines, useStations, useSubmitReport } from "../api/queries";
+import { useSubmitReport } from "../api/queries";
+import { lines, stations } from "../data";
 import { FFButton } from "./common/FFButton";
 import { FFLineTag } from "./common/FFLineTag";
 import { FFSelect } from "./common/FFSelect";
@@ -23,8 +24,8 @@ import { FFSelect } from "./common/FFSelect";
 // TODO: More ergonomic components
 
 type FormType = {
-  line: string;
-  stationId: string;
+  line?: string;
+  stationId?: string;
 };
 
 type ReportModalMethods = {
@@ -50,24 +51,25 @@ export const ReportModal = forwardRef(
       reset: resetForm,
     } = useForm<FormType>();
 
-    const line = watch("line");
+    const selectedLine = watch("line");
 
-    const lines = useLines().data!;
-    const stations = useStations().data!;
-
-    const stationOptions = line === undefined ? [] : lines[line];
+    const stationOptions =
+      selectedLine === undefined ? [] : lines[selectedLine];
 
     const close = () => {
       setIsModalOpen(false);
       resetForm();
     };
 
-    const onSubmit: SubmitHandler<FormType> = ({ line, stationId }) => {
-      submitReport({
+    const onSubmit: SubmitHandler<FormType> = async ({ line, stationId }) => {
+      if (line === undefined || stationId === undefined) return;
+
+      await submitReport({
         line,
         station: stations[stationId].name,
         direction: "",
-      }).then(close);
+      });
+      close();
     };
 
     return (
@@ -118,14 +120,16 @@ export const ReportModal = forwardRef(
                 options={stationOptions}
                 placeholder="Station"
                 scrollable
-                renderOption={(id) => (
-                  <View flexDir="row">
-                    <FFLineTag line={line} mr={2} />
-                    <Text bold color="white">
-                      {stations[id].name}
-                    </Text>
-                  </View>
-                )}
+                renderOption={(id) =>
+                  selectedLine !== undefined && (
+                    <View flexDir="row">
+                      <FFLineTag line={selectedLine} mr={2} />
+                      <Text bold color="white">
+                        {stations[id].name}
+                      </Text>
+                    </View>
+                  )
+                }
               />
             </View>
             <View>
@@ -133,7 +137,7 @@ export const ReportModal = forwardRef(
                 {isPending ? <Spinner /> : "Melden"}
               </Button>
               <Button onPress={close} mt={4} variant="outline">
-                Abbrechen
+                <Text color="white">Abbrechen</Text>
               </Button>
             </View>
           </Box>

@@ -1,5 +1,11 @@
 {
-  "extends": ["airbnb", "airbnb-typescript", "airbnb/hooks", "@react-native", "prettier"],
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "airbnb/hooks",
+    "@react-native",
+    "prettier"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json",
@@ -67,7 +73,11 @@
     "import/prefer-default-export": "off",
     "react/jsx-props-no-spreading": "off",
     "react/require-default-props": "off",
-    "react/destructuring-assignment": ["error", "always", { "destructureInSignature": "always" }],
+    "react/destructuring-assignment": [
+      "error",
+      "always",
+      { "destructureInSignature": "always" }
+    ],
     "react/function-component-definition": [
       "error",
       {

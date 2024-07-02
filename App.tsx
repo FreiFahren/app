@@ -28,19 +28,5 @@ const App = () => {
   );
 };
 
-const enableMocking = async () => {
-  await import("./msw.polyfills");
-  const { server } = await import("./tests/mockserver");
-
-  server.listen();
-};
-
-if (__DEV__) {
-  enableMocking().catch(() => {
-    // eslint-disable-next-line no-console
-    console.error("Failed to enable mocking");
-  });
-}
-
 // eslint-disable-next-line import/no-default-export
 export default App;

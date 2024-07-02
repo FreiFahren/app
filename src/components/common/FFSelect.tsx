@@ -1,6 +1,5 @@
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { Button, Pressable, Stack, Text, View } from "native-base";
+import { Button, Pressable, Text, View } from "native-base";
 import React, { ComponentProps, ReactNode, useRef } from "react";
 import { Control, Controller } from "react-hook-form";
 

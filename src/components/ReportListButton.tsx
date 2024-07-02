@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { sum } from "lodash";
 import { Spinner, Stack, Text, View } from "native-base";
 import {
   ComponentProps,
@@ -11,7 +10,8 @@ import {
 } from "react";
 
 import { type Report } from "../api/client";
-import { useReports, useStations } from "../api/queries";
+import { useReports } from "../api/queries";
+import { stations } from "../data";
 import { FFButton } from "./common/FFButton";
 import { FFScrollSheet } from "./common/FFSheet";
 
@@ -20,11 +20,7 @@ type ReportItemProps = {
 };
 
 const ReportItem = ({ report }: ReportItemProps) => {
-  const { data: station } = useStations(
-    (stations) => stations[report.stationId]
-  );
-
-  if (station === undefined) return null;
+  const station = stations[report.stationId];
 
   return (
     <Stack space={2}>
@@ -50,39 +46,9 @@ const ReportItem = ({ report }: ReportItemProps) => {
   );
 };
 
-const useReportsByLine = (reports: Report[] | undefined) => {
-  const { data: stations } = useStations();
-
-  if (reports === undefined || stations === undefined) return {};
-
-  const byLine = reports.reduce((acc, report) => {
-    const station = stations[report.stationId];
-
-    return station.lines.reduce(
-      (accInner, line) => ({
-        ...accInner,
-        [line]: {
-          ...accInner[line],
-          [report.stationId]: (accInner[line][report.stationId] ?? 0) + 1,
-        },
-      }),
-      acc
-    );
-  }, {} as Record<string, Record<string, number>>);
-
-  return byLine;
-};
-
 export const ReportListSheet = forwardRef(
   (_props: PropsWithChildren<{}>, ref: Ref<BottomSheetModalMethods>) => {
     const { data: reports } = useReports();
-    const { data: stations } = useStations();
-
-    const reportsByLine = useReportsByLine(reports);
-    const sortedReportsByLine = Object.entries(reportsByLine).sort(
-      ([_, reportsA], [__, reportsB]) =>
-        sum(Object.values(reportsB)) - sum(Object.values(reportsA))
-    );
 
     return (
       <FFScrollSheet ref={ref}>
@@ -96,8 +62,7 @@ export const ReportListSheet = forwardRef(
             <Spinner />
           </View>
         ) : (
-          <View>
-            <Text>Nach Linie</Text>
+          <View mt={4}>
             <Stack space={4} pb={12}>
               {reports.map((report) => (
                 <ReportItem
@@ -115,14 +80,9 @@ export const ReportListSheet = forwardRef(
   }
 );
 
-type ReportListButtonProps = {
-  reports: Report[];
-} & Partial<ComponentProps<typeof FFButton>>;
+type ReportListButtonProps = Partial<ComponentProps<typeof FFButton>>;
 
-export const ReportListButton = ({
-  reports,
-  ...props
-}: ReportListButtonProps) => {
+export const ReportListButton = (props: ReportListButtonProps) => {
   const sheetRef = useRef<BottomSheetModalMethods>(null);
 
   return (

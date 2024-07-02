@@ -1,26 +1,26 @@
-import { Box, Row, Spinner, Text, View } from "native-base";
+import { Box, Text, View } from "native-base";
 
-import { useLines, useReports, useStations } from "./api/queries";
+import { useReports } from "./api/queries";
+import { FFBox } from "./components/common/FFBox";
 import { FFMapView } from "./components/FFMapView";
+import { FFSpinner } from "./components/FFSpinner";
 import { ReportButton } from "./components/ReportButton";
 import { ReportListButton } from "./components/ReportListButton";
 
 const LoadingBar = () => (
-  <Row bg="black" borderRadius={4} px={4} py={1} justifyContent="space-between">
-    <Text color="white">Loading...</Text>
-    <Spinner size={8} />
-  </Row>
+  <FFBox justifyContent="space-between" alignItems="center" flexDirection="row">
+    <Text color="white" fontWeight="bold" fontSize="md">
+      Meldungen werden geladen...
+    </Text>
+    <FFSpinner size={8} />
+  </FFBox>
 );
 
 export const Main = () => {
-  const { isLoading: isLoadingStations } = useStations();
-  const { isLoading: isLoadingLines } = useLines();
   const { isLoading: isLoadingReports, data: reports } = useReports();
 
-  if (isLoadingStations || isLoadingLines) return null;
-
   return (
-    <View flex={1}>
+    <View width="100%" height="100%">
       <FFMapView reports={reports ?? []} />
       <Box
         flex={1}
@@ -30,14 +30,17 @@ export const Main = () => {
         bottom={0}
         right={0}
         pointerEvents="box-none"
-        justifyContent="flex-end"
+        justifyContent="space-between"
         px={4}
         pb={8}
         safeArea
+        backgroundColor="red"
       >
-        {isLoadingReports && <LoadingBar />}
-        <ReportListButton reports={reports ?? []} alignSelf="flex-end" />
-        <ReportButton alignSelf="flex-end" mt={2} />
+        <View>{isLoadingReports && <LoadingBar />}</View>
+        <View pointerEvents="box-none">
+          <ReportListButton alignSelf="flex-end" />
+          <ReportButton alignSelf="flex-end" mt={2} />
+        </View>
       </Box>
     </View>
   );

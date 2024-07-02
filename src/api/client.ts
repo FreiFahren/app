@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { config } from "../config";
+import { recentResponse } from "./mockresponse";
 
 export const reportSchema = z
   .object({
@@ -17,6 +18,9 @@ export const reportSchema = z
 export type Report = z.infer<typeof reportSchema>;
 
 const getReports = async (): Promise<Report[]> => {
+  if (__DEV__) {
+    return reportSchema.array().parse(recentResponse);
+  }
   const response = await fetch(`${config.FF_API_BASE_URL}/recent`);
   const data = await response.json();
 
@@ -33,22 +37,6 @@ const stationSchema = z.object({
 });
 
 export type Station = z.infer<typeof stationSchema>;
-
-const getStations = async (): Promise<Record<string, Station>> => {
-  const response = await fetch(`${config.FF_API_BASE_URL}/list?stations=true`);
-  const data = await response.json();
-
-  return z.record(z.string(), stationSchema).parse(data);
-};
-
-const linesSchema = z.record(z.string(), z.string().array());
-
-const getLines = async (): Promise<Record<string, string[]>> => {
-  const response = await fetch(`${config.FF_API_BASE_URL}/list?lines=true`);
-  const data = await response.json();
-
-  return linesSchema.parse(data);
-};
 
 type PostReport = {
   line: string;
@@ -70,7 +58,5 @@ const postReport = async (report: PostReport) => {
 
 export const api = {
   getReports,
-  getStations,
-  getLines,
   postReport,
 };
